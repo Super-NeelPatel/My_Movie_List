@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const tempMovieData = [
   {
@@ -45,21 +45,78 @@ const tempMovieData = [
   },
 ];
 
+const KEY = "2a96f788";
+
 export default function App() {
+  const [movies, setMovies] = useState([]);
+  const [query, setQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const temQuery = "";
+
+  useEffect(
+    function () {
+      async function fetchMovies() {
+        setIsLoading(true);
+
+        try {
+          const res = await fetch(
+            `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
+          );
+
+          //Here we are checking for errors. Checking response code "okay"
+          if (!res.ok)
+            throw new Error("Something Went Worng with Loading Movies.");
+
+          const data = await res.json();
+          if (data.Response === "False") throw new Error("Movie not found");
+          setMovies(data.Search);
+          setIsLoading(false);
+        } catch (err) {
+          // console.error(err.message);
+          setError(err.message);
+        } finally {
+          setIsLoading(false);
+          setError("");
+        }
+      }
+      if (query.length < 3) {
+        setMovies([]);
+        setError("");
+        return;
+      }
+      fetchMovies();
+    },
+    [query]
+  );
+  console.log(movies);
   return (
     <div className="App">
-      <NavBar />
+      <NavBar query={query} setQuery={setQuery} />
       <Title />
-      <Boxes tempMovieData={tempMovieData} />
+      <Boxes
+        tempMovieData={tempMovieData}
+        movies={movies}
+        isLoading={isLoading}
+        error={error}
+      />
     </div>
   );
 }
 
-function NavBar() {
+function NavBar({ query, setQuery }) {
   return (
     <nav className="nav-container">
       <div className="logo">LOGO</div>
-      <input type="text" placeholder="Search..." />
+      <input
+        type="text"
+        placeholder="Search..."
+        onChange={(e) => {
+          setQuery(e.target.value);
+          // console.log(query);
+        }}
+        value={query}
+      />
       <div>
         <p>X Result</p>
       </div>
@@ -74,7 +131,7 @@ function Title() {
   );
 }
 
-function Boxes({ tempMovieData }) {
+function Boxes({ tempMovieData, movies, isLoading, setIsLoading, error }) {
   const [currentMovieTitle, setCurrentMovieTitle] = useState(null);
   const [currentMovieImg, setCurrentMovieImg] = useState(null);
   return (
@@ -83,6 +140,10 @@ function Boxes({ tempMovieData }) {
         tempMovieData={tempMovieData}
         setCurrentMovieTitle={setCurrentMovieTitle}
         setCurrentMovieImg={setCurrentMovieImg}
+        movies={movies}
+        isLoading={isLoading}
+        setIsLoading={setIsLoading}
+        error={error}
       />
       <RightBox
         currentMovieTitle={currentMovieTitle}
@@ -93,7 +154,14 @@ function Boxes({ tempMovieData }) {
 }
 
 //This is box where all the Movie query displays
-function LeftBox({ tempMovieData, setCurrentMovieTitle, setCurrentMovieImg }) {
+function LeftBox({
+  tempMovieData,
+  setCurrentMovieTitle,
+  setCurrentMovieImg,
+  movies,
+  isLoading,
+  error,
+}) {
   const [btnState, setBtnState] = useState("－");
 
   return (
@@ -108,15 +176,37 @@ function LeftBox({ tempMovieData, setCurrentMovieTitle, setCurrentMovieImg }) {
       </div>
       {btnState === "－" ? (
         <div className="movie-list-container">
-          <MovieList
-            tempMovieData={tempMovieData}
-            setCurrentMovieTitle={setCurrentMovieTitle}
-            setCurrentMovieImg={setCurrentMovieImg}
-          />
+          {/* IF currently loading but there is no error, there will be a data that will be show up */}
+          {isLoading && <Loader />}
+          {!isLoading && !error && (
+            <MovieList
+              tempMovieData={tempMovieData}
+              setCurrentMovieTitle={setCurrentMovieTitle}
+              setCurrentMovieImg={setCurrentMovieImg}
+              movies={movies}
+            />
+          )}
+          {error && <ErrorMessage error={error} />}
+          {/* {isLoading === true ? (
+            <Loader />
+          ) : (
+            <MovieList
+              tempMovieData={tempMovieData}
+              setCurrentMovieTitle={setCurrentMovieTitle}
+              setCurrentMovieImg={setCurrentMovieImg}
+              movies={movies}
+            />
+          )} */}
         </div>
       ) : null}
     </div>
   );
+}
+function Loader() {
+  return <h1 className="loading-text">Loading Movie Data...</h1>;
+}
+function ErrorMessage({ error }) {
+  return <h1 className="error-text">⛔️ {error} ⛔️</h1>;
 }
 
 //Movie list----Contais all movies
@@ -124,10 +214,11 @@ function MovieList({
   tempMovieData,
   setCurrentMovieTitle,
   setCurrentMovieImg,
+  movies,
 }) {
   return (
     <ul>
-      {tempMovieData.map((movie) => (
+      {movies.map((movie) => (
         <Movie
           movie={movie}
           key={movie.imdbID}

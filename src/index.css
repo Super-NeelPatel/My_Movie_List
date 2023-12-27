@@ -97,16 +97,19 @@ input {
   padding: 8px 8px;
 }
 .li-movie_img {
-  height: 150px;
+  height: 90px;
+  width: 60px;
 }
 .li-movie_details {
   margin-left: 20px;
   position: relative;
   color: gainsboro;
-
+  h2 {
+    font-size: 20px;
+  }
   p {
     position: absolute;
-    bottom: 50%;
+    bottom: 10px;
     font-size: 20px;
   }
 }
@@ -131,6 +134,13 @@ input {
 }
 .btn-add-watch:active {
   font-size: 13px;
+}
+
+.loading-text,
+.error-text {
+  text-align: center;
+  color: white;
+  margin-top: 30px;
 }
 
 /* ////////////// Right Box //////////////// */
