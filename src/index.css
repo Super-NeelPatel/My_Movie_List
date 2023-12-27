@@ -33,6 +33,7 @@ input {
   /* background-color: bisque; */
   justify-content: space-around;
   margin-top: 50px;
+  height: 80vh;
 }
 .box {
   height: 50rem;
@@ -43,8 +44,7 @@ input {
   width: 40%;
   display: flex;
   flex-direction: column;
-  padding: 15px;
-  gap: 35px;
+  gap: 20px;
 }
 .l-box {
   background-color: steelblue;
@@ -56,7 +56,6 @@ input {
 
 .btn-container {
   width: 100%;
-  /* background-color: blue; */
   height: 6%;
   position: relative;
   border-bottom: 2px solid white;
@@ -67,29 +66,77 @@ input {
   height: 40px;
   right: 0;
   margin: 5px 5px;
-  /* padding: 4px 12px; */
   background: none;
   border: none;
   font-size: 26px;
   border-radius: 20px;
   background-color: rgb(164, 214, 255);
-  /* z-index: 999; */
 }
 .btn-toggle:hover {
   background-color: rgb(96, 184, 255);
   cursor: pointer;
 }
+
+/* $$$$ This is the movie list */
 .movie-list-container {
   background-color: rgb(19, 40, 57);
-
-  visibility: visible;
   height: calc(100% - 6%);
   list-style: none;
   overflow-y: scroll;
 }
 
+.li-container {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 2px solid white;
+}
+
+.li-movie {
+  color: white;
+  display: flex;
+  padding: 8px 8px;
+}
+.li-movie_img {
+  height: 150px;
+}
+.li-movie_details {
+  margin-left: 20px;
+  position: relative;
+  color: gainsboro;
+
+  p {
+    position: absolute;
+    bottom: 50%;
+    font-size: 20px;
+  }
+}
+.li-container:hover {
+  background-color: rgb(35, 53, 68);
+}
+
+.btn-add-watch {
+  height: fit-content;
+  margin: 15px;
+  height: 30px;
+  width: 60px;
+  font-size: 14px;
+  color: rgb(30, 69, 101);
+  color: white;
+  background-color: rgb(21, 60, 92);
+  border: none;
+  border-radius: 20px;
+}
+.btn-add-watch:hover {
+  border: 1px solid rgb(0, 106, 187);
+}
+.btn-add-watch:active {
+  font-size: 13px;
+}
+
+/* ////////////// Right Box //////////////// */
 .movie-details {
   display: flex;
+  height: 40%;
   img {
     height: 250px;
     padding-right: 10px;
@@ -103,7 +150,7 @@ input {
 
 .watch-list {
   background-color: rgb(197, 255, 236);
-  height: 100%;
+  height: 60%;
   font-size: 24px;
   text-align: center;
 }
