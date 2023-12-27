@@ -1,49 +1,6 @@
 import { useEffect, useState } from "react";
-
-const tempMovieData = [
-  {
-    imdbID: "tt1375666",
-    Title: "Inception",
-    Year: "2010",
-    Poster:
-      "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
-  },
-  {
-    imdbID: "tt0133093",
-    Title: "The Matrix",
-    Year: "1999",
-    Poster:
-      "https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_SX300.jpg",
-  },
-  {
-    imdbID: "tt6751668",
-    Title: "Parasite",
-    Year: "2019",
-    Poster:
-      "https://m.media-amazon.com/images/M/MV5BYWZjMjk3ZTItODQ2ZC00NTY5LWE0ZDYtZTI3MjcwN2Q5NTVkXkEyXkFqcGdeQXVyODk4OTc3MTY@._V1_SX300.jpg",
-  },
-  {
-    imdbID: "tt1375666a",
-    Title: "Inception",
-    Year: "2010",
-    Poster:
-      "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
-  },
-  {
-    imdbID: "tt0133093v",
-    Title: "The Matrix",
-    Year: "1999",
-    Poster:
-      "https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_SX300.jpg",
-  },
-  {
-    imdbID: "tt6751668g",
-    Title: "Parasite",
-    Year: "2019",
-    Poster:
-      "https://m.media-amazon.com/images/M/MV5BYWZjMjk3ZTItODQ2ZC00NTY5LWE0ZDYtZTI3MjcwN2Q5NTVkXkEyXkFqcGdeQXVyODk4OTc3MTY@._V1_SX300.jpg",
-  },
-];
+import NavBar from "./components/NavBar";
+import Title from "./components/Title";
 
 const KEY = "2a96f788";
 
@@ -52,7 +9,6 @@ export default function App() {
   const [query, setQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const temQuery = "";
 
   useEffect(
     function () {
@@ -95,7 +51,7 @@ export default function App() {
       <NavBar query={query} setQuery={setQuery} />
       <Title />
       <Boxes
-        tempMovieData={tempMovieData}
+        // tempMovieData={tempMovieData}
         movies={movies}
         isLoading={isLoading}
         error={error}
@@ -104,36 +60,11 @@ export default function App() {
   );
 }
 
-function NavBar({ query, setQuery }) {
-  return (
-    <nav className="nav-container">
-      <div className="logo">LOGO</div>
-      <input
-        type="text"
-        placeholder="Search..."
-        onChange={(e) => {
-          setQuery(e.target.value);
-          // console.log(query);
-        }}
-        value={query}
-      />
-      <div>
-        <p>X Result</p>
-      </div>
-    </nav>
-  );
-}
-function Title() {
-  return (
-    <div className="title-container">
-      <h1>Neel's Movie Finder</h1>
-    </div>
-  );
-}
-
 function Boxes({ tempMovieData, movies, isLoading, setIsLoading, error }) {
   const [currentMovieTitle, setCurrentMovieTitle] = useState(null);
   const [currentMovieImg, setCurrentMovieImg] = useState(null);
+  const [selectedMovieID, setSelectedMovieID] = useState("");
+
   return (
     <div className="boxes">
       <LeftBox
@@ -144,10 +75,12 @@ function Boxes({ tempMovieData, movies, isLoading, setIsLoading, error }) {
         isLoading={isLoading}
         setIsLoading={setIsLoading}
         error={error}
+        setSelectedMovieID={setSelectedMovieID}
       />
       <RightBox
         currentMovieTitle={currentMovieTitle}
         currentMovieImg={currentMovieImg}
+        selectedMovieID={selectedMovieID}
       />
     </div>
   );
@@ -161,6 +94,7 @@ function LeftBox({
   movies,
   isLoading,
   error,
+  setSelectedMovieID,
 }) {
   const [btnState, setBtnState] = useState("－");
 
@@ -184,19 +118,10 @@ function LeftBox({
               setCurrentMovieTitle={setCurrentMovieTitle}
               setCurrentMovieImg={setCurrentMovieImg}
               movies={movies}
+              setSelectedMovieID={setSelectedMovieID}
             />
           )}
           {error && <ErrorMessage error={error} />}
-          {/* {isLoading === true ? (
-            <Loader />
-          ) : (
-            <MovieList
-              tempMovieData={tempMovieData}
-              setCurrentMovieTitle={setCurrentMovieTitle}
-              setCurrentMovieImg={setCurrentMovieImg}
-              movies={movies}
-            />
-          )} */}
         </div>
       ) : null}
     </div>
@@ -215,6 +140,7 @@ function MovieList({
   setCurrentMovieTitle,
   setCurrentMovieImg,
   movies,
+  setSelectedMovieID,
 }) {
   return (
     <ul>
@@ -222,6 +148,7 @@ function MovieList({
         <Movie
           movie={movie}
           key={movie.imdbID}
+          setSelectedMovieID={setSelectedMovieID}
           setCurrentMovieTitle={setCurrentMovieTitle}
           setCurrentMovieImg={setCurrentMovieImg}
         />
@@ -230,13 +157,19 @@ function MovieList({
   );
 }
 
-function Movie({ movie, setCurrentMovieTitle, setCurrentMovieImg }) {
+function Movie({
+  movie,
+  setCurrentMovieTitle,
+  setCurrentMovieImg,
+  setSelectedMovieID,
+}) {
   return (
     <div
       className="li-container"
       onClick={() => {
         setCurrentMovieTitle(movie.Title);
         setCurrentMovieImg(movie.Poster);
+        setSelectedMovieID(movie.imdbID);
       }}
     >
       <li className="li-movie">
@@ -254,12 +187,13 @@ function Movie({ movie, setCurrentMovieTitle, setCurrentMovieImg }) {
   );
 }
 
-function RightBox({ currentMovieTitle, currentMovieImg }) {
+function RightBox({ currentMovieTitle, currentMovieImg, selectedMovieID }) {
   return (
     <div className="box r-box">
       <SelectedMovieDetails
         currentMovieTitle={currentMovieTitle}
         currentMovieImg={currentMovieImg}
+        selectedMovieID={selectedMovieID}
       />
       <WatchList
         currentMovieTitle={currentMovieTitle}
@@ -269,13 +203,58 @@ function RightBox({ currentMovieTitle, currentMovieImg }) {
   );
 }
 
-function SelectedMovieDetails({ currentMovieTitle, currentMovieImg }) {
+function SelectedMovieDetails({ selectedMovieID }) {
+  console.log(selectedMovieID);
+  // `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
+  const [selectedMovieImg, setSelectedMovieImg] = useState("");
+  const [selectedMovieTitle, setSelectedMovieTitle] = useState("");
+  const [selectedMovieYear, setSelectedMovieYear] = useState("");
+  const [selectedMovieGenre, setSelectedMovieGenre] = useState("");
+  const [selectedMoviePlot, setSelectedMoviePlot] = useState("");
+
+  const [selectedMovieTime, setSelectedMovieTime] = useState("");
+  const [selectedMovieLang, setSelectedMovieLang] = useState("");
+  const [selectedMovieRate, setSelectedMovieRate] = useState("");
+  useEffect(
+    function () {
+      async function fetchMovies() {
+        const res = await fetch(
+          `http://www.omdbapi.com/?apikey=${KEY}&i=${selectedMovieID}`
+        );
+        const data = await res.json();
+        console.log(data);
+        setSelectedMovieImg(data.Poster);
+        setSelectedMovieTitle(data.Title);
+        setSelectedMovieYear(data.Year);
+        setSelectedMovieGenre(data.Genre);
+        setSelectedMoviePlot(data.Plot);
+        setSelectedMovieTime(data.Runtime);
+        setSelectedMovieLang(data.Language);
+        setSelectedMovieRate(data.imdbRating);
+      }
+      fetchMovies();
+    },
+    [selectedMovieID]
+  );
+
   return (
     <div className="movie-details">
-      {currentMovieTitle ? (
+      {selectedMovieTitle ? (
         <>
-          <img src={currentMovieImg} alt="Img" />
-          <p>{currentMovieTitle}</p>
+          <img src={selectedMovieImg} alt="Img" />
+          <div className="movie-details_texts">
+            <div>
+              <p className="text-movie-name">Title: {selectedMovieTitle}</p>
+              <p className="text-movie-year">Year: {selectedMovieYear}</p>
+            </div>
+            <p className="text-movie-genre">Genre: {selectedMovieGenre}</p>
+            <p className="text-movie-des">Story: {selectedMoviePlot}</p>
+            <div className="text-movie-small_details">
+              <p>⏳ {selectedMovieTime}</p>
+              <p>{selectedMovieLang}</p>
+              <p>⭐️ {selectedMovieRate} / 10</p>
+            </div>
+          </div>
         </>
       ) : (
         <h1>No Movie Selected</h1>
@@ -283,6 +262,7 @@ function SelectedMovieDetails({ currentMovieTitle, currentMovieImg }) {
     </div>
   );
 }
+
 function WatchList({ currentMovieTitle, currentMovieImg }) {
   return (
     <div className="watch-list">
