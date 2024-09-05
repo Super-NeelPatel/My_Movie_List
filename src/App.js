@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import NavBar from "./components/NavBar";
 import Title from "./components/Title";
 
-const KEY = "2a96f788";
 
 export default function App() {
   const [movies, setMovies] = useState([]);
